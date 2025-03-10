@@ -1,0 +1,4 @@
+-La idea principal del proyecto es armar un ecomerce funcional utilizando, react, nextjs, prisma. 
+-Utilizamos una base de datos mysql para almacenar la inforamcion.
+-La interaccion con la base de datos se ralizara mendiante una api utilizando nextjs y prisma.
+-Buscamos los componentes tienen que ser simples y reutilizables. Buscaremos crear componentes bobos e intelegentes. 

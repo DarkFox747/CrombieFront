@@ -1,94 +1,62 @@
-import { PrismaClient } from "@prisma/client";
-
+// prisma/seed.js
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
+  // Limpiar la base de datos (opcional, para empezar de cero)
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.user.deleteMany();
+
   // Insertar usuarios
-  const users = await prisma.user.createMany({
+  await prisma.user.createMany({
+    data: [
+      { email: 'admin@example.com', name: 'Admin User', password: 'admin123' },
+      { email: 'user1@example.com', name: 'John Doe', password: 'pass123' },
+      { email: 'user2@example.com', name: 'Jane Smith', password: 'pass456' },
+    ],
+  });
+
+  // Insertar categorías
+  await prisma.category.createMany({
+    data: [
+      { name: 'Electrónica' },
+      { name: 'Ropa' },
+      { name: 'Hogar' },
+    ],
+  });
+
+  // Obtener las categorías creadas para asociar productos
+  const categories = await prisma.category.findMany();
+
+  // Insertar productos
+  await prisma.product.createMany({
     data: [
       {
-        name: "Juan Pérez",
-        email: "juan@example.com",
-        password: "hashedpassword123",
+        name: 'Smartphone',
+        description: 'Teléfono inteligente de última generación',
+        price: 699,
+        stock: 50,
+        categoryID: categories.find((c) => c.name === 'Electrónica').id,
       },
       {
-        name: "María López",
-        email: "maria@example.com",
-        password: "securepassword456",
+        name: 'Camiseta',
+        description: 'Camiseta de algodón 100%',
+        price: 25,
+        stock: 100,
+        categoryID: categories.find((c) => c.name === 'Ropa').id,
       },
       {
-        name: "Carlos Fernández",
-        email: "carlos@example.com",
-        password: "strongpass789",
-      },
-      {
-        name: "Ana Gómez",
-        email: "ana@example.com",
-        password: "password123",
-      },
-      {
-        name: "Pedro Sánchez",
-        email: "pedro@example.com",
-        password: "safeandsecure2024",
-      },
-      {
-        name: "Lucía Ramírez",
-        email: "lucia@example.com",
-        password: "mypass456",
-      },
-      {
-        name: "Diego Torres",
-        email: "diego@example.com",
-        password: "topsecret789",
+        name: 'Lámpara',
+        description: 'Lámpara de mesa moderna',
+        price: 45,
+        stock: 30,
+        categoryID: categories.find((c) => c.name === 'Hogar').id,
       },
     ],
   });
 
-  // Insertar productos
-  const products = await prisma.product.createMany({
-    data: [
-      {
-        name: "Laptop Gamer",
-        description: "Potente laptop con RTX 3080",
-        price: 2500,
-      },
-      {
-        name: "Mouse Inalámbrico",
-        description: "Ergonómico y con gran autonomía",
-        price: 50,
-      },
-      {
-        name: "Auriculares Bluetooth",
-        description: "Sonido envolvente y cancelación de ruido",
-        price: 120,
-      },
-      {
-        name: "Teclado Mecánico RGB",
-        description: "Switches silenciosos y luces RGB personalizables",
-        price: 200,
-      },
-      {
-        name: "Monitor 4K 32''",
-        description: "Resolución ultra HD con 144Hz de refresco",
-        price: 800,
-      },
-      {
-        name: "Silla Gamer Ergonómica",
-        description: "Comodidad para largas horas de juego o trabajo",
-        price: 350,
-      },
-      {
-        name: "Smartwatch Deportivo",
-        description: "Monitoreo de salud y notificaciones en tiempo real",
-        price: 180,
-      },
-      {
-        name: "Micrófono Profesional USB",
-        description: "Ideal para streaming y podcasting",
-        price: 140,
-      },
-    ],
-  });
+  console.log('Seeding completed!');
 }
 
 main()
@@ -96,4 +64,6 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

@@ -10,18 +10,19 @@ export async function GET(req: Request) {
   const skip = (page - 1) * limit;
 
   try {
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
+    const [categories, total] = await Promise.all([
+      prisma.category.findMany({
         skip,
         take: limit,
+        include: { products: true },
       }),
-      prisma.user.count(), // Total de registros para calcular páginas
+      prisma.category.count(),
     ]);
 
     const totalPages = Math.ceil(total / limit);
 
     return NextResponse.json({
-      data: users,
+      data: categories,
       pagination: {
         page,
         limit,
@@ -30,21 +31,21 @@ export async function GET(req: Request) {
       },
     }, { status: 200 });
   } catch (error) {
-    console.error('Error en GET /api/usuarios:', error);
+    console.error('Error en GET /api/categorias:', error);
     return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
-  const { email, name, password } = await req.json();
+  const { name } = await req.json();
 
   try {
-    const user = await prisma.user.create({
-      data: { email, name, password },
+    const category = await prisma.category.create({
+      data: { name },
     });
-    return NextResponse.json(user, { status: 201 });
+    return NextResponse.json(category, { status: 201 });
   } catch (error) {
-    console.error('Error en POST /api/usuarios:', error);
+    console.error('Error en POST /api/categorias:', error);
     return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
   }
 }

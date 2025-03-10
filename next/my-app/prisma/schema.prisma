@@ -21,19 +21,19 @@ model User {
 }
 
 model Product {
-  id    Int     @id @default(autoincrement())
-  name String? 
+  id         Int       @id @default(autoincrement())
+  name       String?
   description String?
-  price Int
-  stock Int
+  price      Int
+  stock      Int
   categoryID Int
-  category Category @relation(fields: [categoryID], references: [id])
-  createAt DateTime
-  updateAt DateTime 
+  category   Category  @relation(fields: [categoryID], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  name String
+  id       Int       @id @default(autoincrement())
+  name     String
   products Product[]
 }
