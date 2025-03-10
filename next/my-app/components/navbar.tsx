@@ -24,6 +24,16 @@ const Navbar = () => {
             productos
           </Link>
         </li>
+        <li>
+          <Link href="/categories" className="text-white text-lg hover:underline">
+            categories
+          </Link>
+        </li>
+        <li>
+          <Link href="/products" className="text-white text-lg hover:underline">
+            products
+          </Link>
+        </li>
       </ul>
     </nav>
   );
