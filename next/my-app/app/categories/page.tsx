@@ -43,9 +43,8 @@ export default function CategoriesPage() {
     fetchCategories();
   }, [page, searchId]);
 
-  const handleViewProducts = (categoryId: number) => {
-    router.push(`/products?categoryId=${categoryId}`);
-    // Esto asume que más adelante podrías filtrar productos por categoría
+  const handleViewProducts = (categoryID: number) => {
+    router.push(`/products?categoryId=${categoryID}`);
   };
 
   return (

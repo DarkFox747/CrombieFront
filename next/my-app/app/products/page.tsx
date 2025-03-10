@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 import SearchInput from '../../components/SearchInput';
@@ -22,15 +23,18 @@ export default function ProductsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
-  const limit = 6; // Productos por página
+  const limit = 6;
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get('categoryId');
 
   useEffect(() => {
     async function fetchProducts() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/productos?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
-        );
+        const url = `/api/productos?page=${page}&limit=${limit}${
+          search ? `&search=${encodeURIComponent(search)}` : ''
+        }${categoryId ? `&categoryId=${categoryId}` : ''}`;
+        const res = await fetch(url);
         const { data, pagination } = await res.json();
         setProducts(data || []);
         setTotalPages(pagination.totalPages || 1);
@@ -41,16 +45,15 @@ export default function ProductsPage() {
       }
     }
     fetchProducts();
-  }, [page, search]);
+  }, [page, search, categoryId]); // Dependencia adicional: categoryId
 
   const handleAddToCart = (productId: number) => {
     console.log(`Producto ${productId} agregado al carrito`);
-    // Aquí iría la lógica del carrito
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Productos</h1>
+      <h1 className="text-3xl font-bold mb-6">Productos {categoryId ? `en Categoría ${categoryId}` : ''}</h1>
       <SearchInput
         value={search}
         onChange={setSearch}

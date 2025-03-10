@@ -1,4 +1,3 @@
-// app/api/productos/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
@@ -9,12 +8,14 @@ export async function GET(req: Request) {
   const page = Number(searchParams.get('page')) || 1;
   const limit = Number(searchParams.get('limit')) || 10;
   const search = searchParams.get('search') || '';
+  const categoryId = searchParams.get('categoryId') ? Number(searchParams.get('categoryId')) : null;
   const skip = (page - 1) * limit;
 
   try {
-    const where = search
-      ? { name: { contains: search } } // Quitamos 'mode: insensitive' para MySQL
-      : {};
+    const where = {
+      ...(search ? { name: { contains: search } } : {}),
+      ...(categoryId ? { categoryID: categoryId } : {}), // Filtro por categoryId
+    };
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
